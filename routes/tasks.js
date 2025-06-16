@@ -23,7 +23,8 @@ router.post('/', async (req, res) => {
 });
 
 // GET All Tasks for User
-router.get('/', authMiddleware, async (req, res) => {
+// authMiddleware
+router.get('/', async (req, res) => {
   try {
     const tasks = await Task.find({ userId: req.user.id });
     res.json(tasks);
@@ -33,7 +34,8 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // UPDATE Task
-router.put('/:id', authMiddleware, async (req, res) => {
+// authMiddleware
+router.put('/:id', async (req, res) => {
   const { title, description, dueDate, status } = req.body;
   try {
     const task = await Task.findOneAndUpdate(
@@ -49,7 +51,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
 });
 
 // DELETE Task
-router.delete('/:id', authMiddleware, async (req, res) => {
+// authMiddleware
+router.delete('/:id', async (req, res) => {
   try {
     const deleted = await Task.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
     if (!deleted) return res.status(404).json({ error: 'Task not found' });
