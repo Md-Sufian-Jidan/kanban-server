@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const Task = require('../models/Task');
-// const authMiddleware = require('../middleware/auth');
-// authMiddleware
+const authMiddleware = require('../middleware/auth');
 
 // CREATE Task
-router.post('/', async (req, res) => {
-  const { title, description, dueDate, status } = req.body;
+router.post('/', authMiddleware, async (req, res) => {
+  const { title, description, dueDate, status, userEmail } = req.body;
   try {
     const task = new Task({
       title,
       description,
       dueDate,
       status,
-      userId: req.user.id
+      // userId: req.user.id,
+      userEmail
     });
     await task.save();
     res.status(201).json(task);
@@ -23,10 +23,9 @@ router.post('/', async (req, res) => {
 });
 
 // GET All Tasks for User
-// authMiddleware
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    const tasks = await Task.find({ userId: req.user.id });
+    const tasks = await Task.find({ userEmail: req.user.email });
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -34,15 +33,15 @@ router.get('/', async (req, res) => {
 });
 
 // UPDATE Task
-// authMiddleware
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   const { title, description, dueDate, status } = req.body;
   try {
     const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id },
+      { _id: req.params.id, userEmail: req.user.email },
       { title, description, dueDate, status },
       { new: true }
     );
+
     if (!task) return res.status(404).json({ error: 'Task not found' });
     res.json(task);
   } catch (err) {
@@ -51,10 +50,9 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE Task
-// authMiddleware
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const deleted = await Task.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    const deleted = await Task.findOneAndDelete({ _id: req.params.id, userEmail: req.user.email });
     if (!deleted) return res.status(404).json({ error: 'Task not found' });
     res.json({ message: 'Task deleted' });
   } catch (err) {

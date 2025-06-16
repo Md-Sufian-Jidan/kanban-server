@@ -15,7 +15,7 @@ app.use(cors({
         "http://localhost:5173",
         "http://localhost:5174",
     ],
-    // credentials: true
+    credentials: true
 }));
 app.use(express.json());
 
@@ -28,10 +28,7 @@ app.use('/api/tasks', taskRoutes);
 
 // Connect to MongoDB and start server
 mongoose
-    .connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
+    .connect(process.env.MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB connected');
         app.listen(PORT, () => {

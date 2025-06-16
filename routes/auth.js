@@ -21,11 +21,11 @@ router.post('/register', async (req, res) => {
     await newUser.save();
 
     // Create JWT
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ email: newUser.email }, process.env.JWT_SECRET, {
       expiresIn: '2d',
     });
 
-    res.status(201).json({ user: newUser._id, token });
+    res.status(201).json({ email: newUser.email, token });
   } catch (err) {
     console.error('Register Error:', err);
     res.status(500).json({ message: 'Server error' });
@@ -42,11 +42,11 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
       expiresIn: '2d',
     });
 
-    res.status(200).json({ user: user._id, token });
+    res.status(200).json({ user: user.email, token });
   } catch (err) {
     console.error('Login Error:', err);
     res.status(500).json({ message: 'Server error' });
