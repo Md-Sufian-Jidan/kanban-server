@@ -32,6 +32,26 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+// Get all the tasks stats
+router.get("/stats", authMiddleware, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+
+    const tasks = await Task.find({ userEmail });
+
+    const stats = {
+      todo: tasks.filter(task => task.status === "To Do").length,
+      inProgress: tasks.filter(task => task.status === "In Progress").length,
+      completed: tasks.filter(task => task.status === "Completed").length,
+    };
+
+    res.json(stats);
+  } catch (err) {
+    console.error("Error fetching task stats:", err);
+    res.status(500).json({ error: "Failed to fetch task stats" });
+  }
+});
+
 // UPDATE Task
 router.put('/:id', authMiddleware, async (req, res) => {
   const { title, description, dueDate, status } = req.body;
